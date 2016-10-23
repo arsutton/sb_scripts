@@ -92,7 +92,16 @@ done
 
 popd > /dev/null
 
+#Copy the mods into the actual "mods" folder, being sure to murder the old files
 
+echo Removing extant mod files...
+pushd /home/steam/Steam/steamapps/common/Starbound/mods/ > /dev/null
+rm -rf ./*
+echo Installing latest mod files...
+pushd /home/steam/Steam/steamapps/workshop/content/211820/ > /dev/null
+cp -r ./* /home/steam/Steam/steamapps/common/Starbound/mods/
+popd > /dev/null
+popd > /dev/null
 
 # CLEANUP
 
