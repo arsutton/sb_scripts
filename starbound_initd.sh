@@ -14,8 +14,6 @@ case "$1" in
 			echo "Starbound Server appears to be already running"
 			exit 0
 		fi
-		echo "Updating Starbound Server..."
-		su steam -c '/home/steam/utilities/update_sb_and_mods.sh alex'
 		echo "Launching Starbound Server..."
                 pushd /home/steam/Steam/steamapps/common/Starbound/linux > /dev/null
 		su steam -c 'screen -d -m "./starbound_server"'
@@ -66,8 +64,11 @@ case "$1" in
 	fi
         ;;
   update)
-	/etc/init.d/starbound restart
-	;;
+    /etc/init.d/starbound stop
+    echo "Updating Starbound Server..."
+	su steam -c '/home/steam/utilities/update_sb_and_mods.sh alex'
+    /etc/init.d/starbound start
+    ;;
 esac
 
 exit 0

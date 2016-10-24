@@ -42,30 +42,30 @@ rm -f * > /dev/null
 
 # GETTING RID OF OLD MODS
 
-echo Getting rid of any mods that are no longer in the collection
-
 mod_folder=/home/steam/Steam/steamapps/workshop/content/$STARBOUND_GAME_ID
+if [ -d "$mod_folder" ]; then
+    echo Getting rid of any mods that are no longer in the collection
+    mod_folder=/home/steam/Steam/steamapps/workshop/content/$STARBOUND_GAME_ID
+    pushd $mod_folder > /dev/null
+    for this_mod in `ls -d */ 2> /dev/null`; do
+        this_mod=$( echo $this_mod | awk -F '/' '{print $1}' )
+        mod_belongs=false
+        for desired_mod in `echo $mod_list`; do
+            if [ "$desired_mod" == "$this_mod" ]; then
+                mod_belongs=true
+            fi
+        done
 
-for this_mod in `ls $mod_folder`; do
-
-    mod_belongs=false
-    for desired_mod in `echo $mod_list`; do
-        if [ "$desired_mod" == "$this_mod" ]; then
-            mod_belongs=true
+        if [ "$mod_belongs" == 'true' ]; then
+            touch /dev/null
+        else
+            echo Removing $this_mod
+            rm -rf $this_mod > /dev/null
         fi
+        
     done
-
-    if [ "$mod_belongs" == 'true' ]; then
-        touch /dev/null
-    else
-        echo Removing $this_mod
-        pushd $mod_folder > /dev/null
-        rm -rf $this_mod > /dev/null
-        popd > /dev/null
-    fi
-    
-done
-
+    popd > /dev/null
+fi
 
 # UPDATING STARBOUND AND MODS
 
@@ -87,20 +87,39 @@ for mod_id in `echo $mod_list`; do
     #./steamcmd.sh +login $username +workshop_download_item $STARBOUND_GAME_ID $mod_id +quit
 done
 
-./steamcmd.sh +login $username +app_update $STARBOUND_GAME_ID $workshop_download_string +quit
+./steamcmd.sh +login $username +app_update $STARBOUND_GAME_ID validate $workshop_download_string +quit
 
 
 popd > /dev/null
 
 #Copy the mods into the actual "mods" folder, being sure to murder the old files
 
-echo Removing extant mod files...
-pushd /home/steam/Steam/steamapps/common/Starbound/mods/ > /dev/null
-rm -rf ./*
-echo Installing latest mod files...
-pushd /home/steam/Steam/steamapps/workshop/content/211820/ > /dev/null
-cp -r ./* /home/steam/Steam/steamapps/common/Starbound/mods/
+echo
+echo COPYING MODS INTO DIRECTORY
+echo
+
+destination_folder=/home/steam/Steam/steamapps/common/Starbound/mods/
+
+pushd $destination_folder > /dev/null
+rm *.pak 2> /dev/null
 popd > /dev/null
+pushd $mod_folder > /dev/null
+for mod_id in `ls -d */ 2> /dev/null`; do
+    mod_id=$( echo $mod_id | awk -F '/' '{print $1}')
+    destination_path=$destination_folder$mod_id\.pak
+    source_path=$mod_id/contents.pak
+    
+    if [ -f "$source_path" ]; then
+        if [ -f "$destination_path" ]; then
+            echo KILLIN!
+            rm $destination_path > /dev/null
+        fi
+        cp $source_path $destination_path > /dev/null
+    fi  
+done
+
+chown -R steam:steam * 2> /dev/null
+
 popd > /dev/null
 
 # CLEANUP
