@@ -117,6 +117,7 @@ export PATH=$PATH:/home/steam/.bin
 export GIT_EDITOR=vim
 export MODSDOWNLOAD=/home/steam/Steam/steamapps/workshop/content/211820
 export MODSFOLDER=/home/steam/Steam/steamapps/common/Starbound/mods
+export STARBOUND=/home/steam/Steam/steamapps/common/Starbound
 
 alias steamcmd="pushd /home/steam/steamcmd && ./steamcmd.sh && popd"
 alias sc="steamcmd"

@@ -25,7 +25,7 @@ MOD_COLLECTION_ID=756472403
 tempdir="/tmp/sb_and_mods_update_$RANDOM"
 
 mkdir $tempdir > /dev/null
-pushd $tempdir > /dev/null
+pushd $tempdir || exit 1 > /dev/null
 
 
 # COLLECTING MODS
@@ -66,6 +66,12 @@ if [ -d "$mod_folder" ]; then
     done
     popd > /dev/null
 fi
+
+echo
+echo BACKING UP GAME INSTALLATION
+echo
+
+/home/steam/utilities/backup_sb.sh update
 
 # UPDATING STARBOUND AND MODS
 
